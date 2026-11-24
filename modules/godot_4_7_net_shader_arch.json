@@ -1,0 +1,25 @@
+{
+  "module_metadata": {
+    "engine": "Godot Engine",
+    "version": "4.7",
+    "module": "networking_shaders_and_architecture",
+    "purpose": "Godot 4.7 DrawableTexture2D, AreaLight3D, .gdshader stencil_mode, High-level Multiplayer (@rpc), and @abstract State Machine architecture."
+  },
+  "drawable_texture_2d_4_7_new": {
+    "resource": "DrawableTexture2D (extends Texture2D)",
+    "description": "NEW in Godot 4.7: A GPU-backed dynamic Texture2D that can be initialized via `setup()` and drawn onto directly at runtime using `blit_rect()` or custom shaders\u2014eliminating the need for a `SubViewport` for fog-of-war, minimaps, or splat painting.",
+    "example": "var fog_tex := DrawableTexture2D.new()\nfog_tex.setup(512, 512, DrawableTexture2D.DRAWABLE_FORMAT_RGBA8_UNORM, Color(0, 0, 0, 0.92))\nsprite.texture = fog_tex\n# Stamp a reveal brush at player position:\nfog_tex.blit_rect(brush_tex, Rect2i(0, 0, 64, 64), Vector2i(px - 32, py - 32))"
+  },
+  "area_light_3d_4_7_new": {
+    "node": "AreaLight3D (extends Light3D)",
+    "description": "NEW in Godot 4.7: Real-time rectangular area light source producing physically plausible soft shadows and rectangular specular reflections."
+  },
+  "shader_4_7_features": {
+    "stencil_mode_4_5_plus": "shader_type spatial;\nstencil_mode read, write, compare_always;\n// Enables X-ray silhouettes, portals, and buffer masking.",
+    "conic_gradients_4_7": "GradientTexture2D.FILL_CONIC \u2014 Native conic gradient fill for radial cooldowns and meters."
+  },
+  "multiplayer_rpc_4_7": {
+    "annotation": "@rpc(\"any_peer\", \"call_local\", \"reliable\")",
+    "invocation": "my_rpc_func.rpc(arg1, arg2)  # Broadcast to all peers\nmy_rpc_func.rpc_id(1, arg1)  # Send specifically to server (peer ID 1)"
+  }
+}

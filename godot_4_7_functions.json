@@ -1,0 +1,39 @@
+{
+  "module_metadata": {
+    "engine": "Godot Engine",
+    "version": "4.7",
+    "module": "core_functions_and_lifecycle",
+    "purpose": "Lifecycle virtual methods, Tween.tween_await() (4.7), Resource.duplicate_deep() (4.5+), Signal, Node, SceneTree, and @GlobalScope utility functions."
+  },
+  "lifecycle_virtual_methods": {
+    "_init": "func _init() -> void: # Called when Object.new() is allocated in memory (before entering SceneTree).",
+    "_enter_tree": "func _enter_tree() -> void: # Called when node enters SceneTree (before children are ready).",
+    "_ready": "func _ready() -> void: # Called once after node and all children have entered SceneTree and @onready vars are initialized.",
+    "_process": "func _process(delta: float) -> void: # Called every visual frame. DO NOT query PhysicsDirectSpaceState here!",
+    "_physics_process": "func _physics_process(delta: float) -> void: # Called every fixed physics tick. Query direct_space_state and move_and_slide() here.",
+    "_unhandled_input": "func _unhandled_input(event: InputEvent) -> void: # Use for gameplay input after UI Controls have had a chance to consume events."
+  },
+  "tween_4_7_api": {
+    "create_tween": "var tween: Tween = create_tween()",
+    "tween_property": "tween.tween_property(object: Object, property: NodePath, final_val: Variant, duration: float) -> PropertyTweener",
+    "tween_interval": "tween.tween_interval(time: float) -> IntervalTweener",
+    "tween_callback": "tween.tween_callback(callback: Callable) -> CallbackTweener",
+    "tween_await_4_7_new": {
+      "signature": "tween.tween_await(sig: Signal) -> AwaitTweener",
+      "description": "NEW in Godot 4.7: Pauses an active Tween sequence in-place until `sig` emits, eliminating the need to split a tween into separate `await` coroutines.",
+      "example": "var tween: Tween = create_tween()\ntween.tween_property(card, ^\"offset_transform_scale\", Vector2(1.1, 1.1), 0.2)\ntween.tween_await(confirm_button.pressed)\ntween.tween_property(card, ^\"modulate:a\", 0.0, 0.25)"
+    },
+    "interruptible_tween_chain_rule": {
+      "rule": "When a UI banner or animation can be interrupted and restarted (`_active_tween.kill()`), NEVER `await _active_tween.finished` in a coroutine followed by `await get_tree().create_timer()`. Killing a tween never emits `.finished`, leaking the suspended coroutine or leaving orphaned timers! Instead, encode the entire sequence inside a single `Tween` using `tween.chain()`, `tween.tween_interval(duration)`, `tween.tween_await(signal)`, and `tween.tween_callback(hide)`."
+    }
+  },
+  "resource_duplication_4_5_to_4_7": {
+    "duplicate": "res.duplicate(subresources: bool = false) -> Resource",
+    "duplicate_deep": "res.duplicate_deep(deep_subresources_mode: int = Resource.DEEP_DUPLICATE_INTERNAL) -> Resource",
+    "rule": "Overhauled in 4.5-4.7 for deterministic deep copying of nested Typed Arrays, Typed Dictionaries, and embedded sub-resources."
+  },
+  "character_body_signatures": {
+    "get_gravity": "get_gravity() -> Vector2 (2D) | Vector3 (3D)",
+    "move_and_slide": "move_and_slide() -> bool # Takes ZERO arguments in Godot 4.x; uses built-in `velocity` property."
+  }
+}

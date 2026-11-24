@@ -1,0 +1,62 @@
+{
+  "module_metadata": {
+    "engine": "Godot Engine",
+    "version": "4.7",
+    "module": "anti_hallucination_cross_reference",
+    "purpose": "Maps legacy Godot 3.x / 4.0-4.4 patterns to exact Godot 4.7 standards and enforces the 5 battle-tested runtime & QA guardrails."
+  },
+  "critical_godot_4_7_guardrails": [
+    {
+      "id": "GUARDRAIL_1_PACKED_ARRAY_SETTERS_4_7",
+      "title": "Godot 4.7 Packed*Array Indexed Mutation Breaking Change",
+      "wrong_4_4": "line_2d.points[0] = Vector2(10, 20)\npolygon_2d.polygon[i] = new_vertex",
+      "correct_4_7": "var pts: PackedVector2Array = line_2d.points\npts[0] = Vector2(10, 20)\nline_2d.points = pts",
+      "reason": "In Godot 4.7, mutating an individual index of a `Packed*Array` property (`points[i] = v`, `polygon[i] = v`) no longer triggers the node property's setter. You MUST mutate a local copy and reassign the full property."
+    },
+    {
+      "id": "GUARDRAIL_2_LAMBDA_PRIMITIVE_CAPTURE",
+      "title": "GDScript Lambda Primitive Value-Capture Trap",
+      "wrong": "var fired: bool = false\nsig.connect(func() -> void: fired = true) # 'fired' in outer scope stays false!",
+      "correct": "var probe: Dictionary[StringName, Variant] = {&\"fired\": false}\nsig.connect(func() -> void: probe[&\"fired\"] = true) # Mutates reference dictionary!",
+      "reason": "GDScript closures capture local primitive types (`bool`, `int`, `float`, `String`, `Vector2`) by VALUE at closure creation time. Always capture a `Dictionary`, `Array`, or `Object` reference when recording state inside a signal lambda."
+    },
+    {
+      "id": "GUARDRAIL_3_PHYSICS_SPACE_STATE_TIMING",
+      "title": "DirectSpaceState Queries Must Run Inside _physics_process()",
+      "wrong": "func _unhandled_input(event: InputEvent) -> void:\n\tvar space := get_world_2d().direct_space_state # Unsafe outside physics tick!",
+      "correct": "var _pending_shot: bool = false\nfunc _unhandled_input(event: InputEvent) -> void:\n\tif event.is_action_pressed(&\"fire\"):\n\t\t_pending_shot = true\nfunc _physics_process(_delta: float) -> void:\n\tif _pending_shot:\n\t\t_pending_shot = false\n\t\t_fire_raycast()",
+      "reason": "Accessing `get_world_2d().direct_space_state` or `get_world_3d().direct_space_state` inside `_process()` or `_input()` can collide with locked physics servers or stale broadphase data."
+    },
+    {
+      "id": "GUARDRAIL_4_CONTROL_OFFSET_TRANSFORMS_4_7",
+      "title": "Use Control.offset_transform_* for UI Animations Inside Containers",
+      "wrong": "tween.tween_property(button_in_vbox, ^\"position:y\", -10.0, 0.2) # VBoxContainer overwrites position!",
+      "correct": "button_in_vbox.offset_transform_enabled = true\ntween.tween_property(button_in_vbox, ^\"offset_transform_position\", Vector2(0.0, -10.0), 0.2)\ntween.tween_property(button_in_vbox, ^\"offset_transform_scale\", Vector2(1.08, 1.08), 0.2)",
+      "reason": "New in Godot 4.7: `offset_transform_position`, `offset_transform_scale`, `offset_transform_rotation`, and `offset_transform_pivot` animate Controls visually without fighting parent Containers or shifting mouse hitboxes."
+    },
+    {
+      "id": "GUARDRAIL_5_LEGACY_3X_40_BAN_LIST",
+      "title": "Banned Godot 3.x and Early 4.0 APIs",
+      "replacements": {
+        "yield(obj, 'sig')": "await obj.sig  OR  tween.tween_await(obj.sig)",
+        "KinematicBody2D / KinematicBody": "CharacterBody2D / CharacterBody3D (or AnimatableBody2D/3D for moving platforms)",
+        "move_and_slide(velocity, UP)": "move_and_slide() (zero arguments; set built-in `velocity` property first)",
+        "TileMap": "TileMapLayer (use `set_cell(coords, source_id, atlas_coords, alt_tile)` with NO layer index)",
+        "obj.connect('sig', self, '_cb')": "obj.sig.connect(_cb)",
+        "remote / puppet / master func": "@rpc('any_peer', 'call_local', 'reliable') func",
+        "Spatial": "Node3D",
+        "Quat": "Quaternion (defaults to Quaternion.IDENTITY in 4.6+)",
+        "SubViewport for 2D brush blitting": "DrawableTexture2D (new in 4.7)"
+      }
+    }
+  ],
+  "task_to_module_routing": {
+    "2d_3d_physics_raycasts_jolt_melee": "modules/godot_4_7_physics_2d_3d.json",
+    "tilemaplayer_navigation_convex_navpoly_ik": "modules/godot_4_7_world_nav_anim.json",
+    "ui_control_offset_transforms_virtual_joystick_audio": "modules/godot_4_7_ui_and_audio.json",
+    "multiplayer_rpc_shaders_drawabletexture2d_arealight3d": "modules/godot_4_7_net_shader_arch.json",
+    "tscn_tres_project_godot_input_keycodes": "modules/godot_4_7_tscn_tres_format.json",
+    "tool_scripts_editor_plugins_undoredo": "modules/godot_4_7_editor_plugins.json",
+    "headless_ci_unit_tests_smoke_tests": "modules/godot_4_7_testing_debugging.json"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "module_metadata": {
+    "engine": "Godot Engine",
+    "version": "4.7",
+    "language": "GDScript 2.0",
+    "module": "basics_and_syntax",
+    "purpose": "Canonical 16-part script ordering, GDScript 2.0 keywords, Godot 4.5-4.7 annotations (@abstract, @export_tool_button), variadic functions (...args: Array), Typed Dictionaries, raw Variant exports, and uid:// preloading."
+  },
+  "canonical_script_order": [
+    "01. @tool, @icon, @static_unload, @abstract",
+    "02. class_name",
+    "03. extends",
+    "04. ## Docstring comment",
+    "05. signals",
+    "06. enums",
+    "07. constants",
+    "08. static variables",
+    "09. @export variables",
+    "10. remaining regular public variables",
+    "11. private (_prefixed) variables",
+    "12. @onready variables",
+    "13. _static_init() and _init()",
+    "14. _enter_tree(), _ready(), _process(), _physics_process(), and other built-in virtual methods",
+    "15. public methods ( including @abstract func )",
+    "16. private (_prefixed) methods and subclasses"
+  ],
+  "godot_4_5_to_4_7_language_features": {
+    "abstract_classes_and_methods_4_5_plus": {
+      "annotation": "@abstract",
+      "rule": "Any class containing at least one `@abstract func` MUST also be marked `@abstract` at the top of the file. Abstract classes cannot be instantiated directly (`StateBase.new()` throws an error), and non-abstract subclasses MUST implement all `@abstract` methods with matching signatures.",
+      "example": "@abstract\nclass_name StateBase\nextends Node\n\n@abstract func enter(msg: Dictionary) -> void\n@abstract func exit() -> void\n@abstract func physics_update(delta: float) -> void"
+    },
+    "variadic_functions_4_5_plus": {
+      "syntax": "func fn_name(fixed_arg: StringName, ...rest_args: Array) -> void:",
+      "rule": "Use `...param_name: Array` as the final parameter to accept an arbitrary number of trailing arguments.",
+      "example": "func log_net_event(tag: StringName, ...details: Array) -> void:\n\tvar parts: PackedStringArray = [\"[%s]\" % tag]\n\tfor item: Variant in details:\n\t\tparts.append(str(item))\n\tprint(\" \".join(parts))"
+    },
+    "typed_dictionaries_4_4_plus": {
+      "syntax": "var dict_name: Dictionary[KeyType, ValueType] = {}",
+      "example": "@export var item_counts: Dictionary[StringName, int] = {&\"health_potion\": 3}"
+    },
+    "raw_variant_exports_4_5_plus": {
+      "syntax": "@export var payload: Variant = null",
+      "rule": "Exporting a raw `Variant` provides a dynamic type-selector dropdown in the Godot Inspector."
+    },
+    "uid_preloading_and_exports_4_4_to_4_7": {
+      "syntax": "const MyScene := preload(\"uid://d4f8a9b2c1e0\")\n@export_file(\"*.tres\", \"*.res\") var fallback_item_uid: String = \"\"",
+      "rule": "Godot 4.5-4.7 supports `uid://` strings directly in `preload()` and `load()`, making references immune to file moves."
+    },
+    "export_tool_button_4_4_plus": {
+      "syntax": "@export_tool_button(\"Button Text\", \"EditorIconName\") var action: Callable = _my_callback",
+      "rule": "Requires `@tool` at top of script. Creates a clickable Inspector button without writing an EditorInspectorPlugin."
+    },
+    "strict_override_return_paths_4_7_breaking": {
+      "rule": "In Godot 4.7, overriding a method with a typed return signature (`-> bool:`, `-> int:`, `-> Variant:`) strictly requires EVERY code branch to return a value at compile time."
+    }
+  }
+}

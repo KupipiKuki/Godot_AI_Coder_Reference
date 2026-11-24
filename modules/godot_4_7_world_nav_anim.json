@@ -1,0 +1,27 @@
+{
+  "module_metadata": {
+    "engine": "Godot Engine",
+    "version": "4.7",
+    "module": "world_navigation_and_animation",
+    "purpose": "Strictly convex NavigationPolygon rule, NavigationAgent2D/3D frame sync, TileMapLayer + AStarGrid2D, 2.5D procedural CanvasTexture normal mapping, and 4.6/4.7 SkeletonModifier3D IK suite."
+  },
+  "navigation_polygon_convexity_rule": {
+    "critical_rule": "When authoring `NavigationPolygon` resources in `.tscn` or GDScript (`polygons = Array[PackedInt32Array]([...])`), EVERY individual indexed polygon in the `polygons` array MUST be strictly CONVEX (all interior angles < 180 degrees)!",
+    "why_it_matters": "Feeding a concave L-shape, T-shape, or notched multi-room polygon as a single `PackedInt32Array` causes `NavigationServer2D` rasterization and path corridor clipping errors, making agents get stuck on wall corners.",
+    "multi_room_doorway_solution": "Decompose multi-room arenas and doorways into multiple adjacent CONVEX quadrilaterals (e.g., Left Room Quad, Doorway Threshold Quad, Right Room Quad) that share doorway vertex indices!"
+  },
+  "navigation_agent_first_frame_sync_rule": {
+    "rule": "NavigationServer2D/3D does not synchronize map regions until the first physics tick. Always `await get_tree().physics_frame` in `_ready()` and guard `_physics_process()` with a `_nav_ready` boolean before calling `nav_agent.get_next_path_position()`."
+  },
+  "procedural_2_5d_normal_mapped_lighting": {
+    "pattern": "Combine a `CanvasTexture` (`diffuse_texture` + `normal_map` generated via `NoiseTexture2D` with `as_normal_map = true`) with `PointLight2D` and `LightOccluder2D` (`OccluderPolygon2D`) for zero-asset 2.5D top-down lighting."
+  },
+  "skeleton_modifier_3d_ik_suite_4_6_to_4_7": {
+    "nodes": [
+      "TwoBoneIK3D \u2014 Fast deterministic limb IK (arms/legs) with pole target Node3D.",
+      "ChainIK3D / SplineIK3D / IterateIK3D \u2014 Multi-bone tails, spines, tentacles, and FABRIK/CCD chains.",
+      "LookAtModifier3D \u2014 Head/eye/turret bone tracking toward a target Node3D.",
+      "BoneConstraint3D \u2014 Aim, copy-transform, and distance bone constraints."
+    ]
+  }
+}

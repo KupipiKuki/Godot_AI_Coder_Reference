@@ -1,0 +1,36 @@
+{
+  "module_metadata": {
+    "engine": "Godot Engine",
+    "version": "4.7",
+    "module": "tscn_tres_and_project_formats",
+    "purpose": "Strict 6-part .tscn ordering, node_paths=PackedStringArray, unique_name_in_owner, procedural Polygon2D visuals, and exact project.godot physical keycodes."
+  },
+  "strict_tscn_section_order": [
+    "1. [gd_scene load_steps=N format=3] (Must be line 1)",
+    "2. [ext_resource type=\"...\" path=\"res://...\" id=\"...\"]",
+    "3. [sub_resource type=\"...\" id=\"...\"] (ALL sub_resources MUST appear BEFORE any [node] block!)",
+    "4. [node name=\"Root\" type=\"...\"] (Root node has NO parent attribute)",
+    "5. [node name=\"Child\" type=\"...\" parent=\".\"] (Child nodes in hierarchy order)",
+    "6. [connection signal=\"...\" from=\"...\" to=\"...\" method=\"...\"] (Optional)"
+  ],
+  "node_paths_and_unique_names": {
+    "exported_node_reference": "[node name=\"Manager\" type=\"Node\" parent=\".\" node_paths=PackedStringArray(\"player\", \"spawn_points\")]\nplayer = NodePath(\"../Player\")\nspawn_points = [NodePath(\"../Spawn1\"), NodePath(\"../Spawn2\")]",
+    "unique_name_in_owner": "Add `unique_name_in_owner = true` inside a `[node]` block so scripts can reference it via `%NodeName`."
+  },
+  "visual_placeholder_rule": {
+    "rule": "`CharacterBody2D`, `StaticBody2D`, `RigidBody2D`, `Area2D`, and `CollisionShape2D` are completely INVISIBLE at runtime! Always attach a `Polygon2D`, `ColorRect`, `Line2D`, or `Sprite2D` child node to every entity so scenes are immediately visible."
+  },
+  "project_godot_exact_physical_keycodes": {
+    "KEY_W": 87,
+    "KEY_A": 65,
+    "KEY_S": 83,
+    "KEY_D": 68,
+    "KEY_E": 69,
+    "KEY_R": 82,
+    "KEY_SPACE": 32,
+    "KEY_ESCAPE": 4194305,
+    "MOUSE_BUTTON_LEFT": 1,
+    "MOUSE_BUTTON_RIGHT": 2,
+    "runtime_fallback_helper": "Always include a static or `_ready()` helper using `InputMap.has_action()` / `InputMap.add_action()` so custom actions work even if `project.godot` was not edited."
+  }
+}

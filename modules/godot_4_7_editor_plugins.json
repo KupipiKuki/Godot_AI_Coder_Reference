@@ -1,0 +1,16 @@
+{
+  "module_metadata": {
+    "engine": "Godot Engine",
+    "version": "4.7",
+    "module": "editor_plugins_and_tools",
+    "purpose": "@tool scripts, @export_tool_button, EditorPlugin, EditorInterface singleton, and EditorUndoRedoManager."
+  },
+  "tool_script_rules": {
+    "header": "@tool must be the very first token on line 1 of the `.gd` file.",
+    "editor_guard": "if Engine.is_editor_hint():\n\t# Editor-only logic\nelse:\n\t# Runtime gameplay logic",
+    "scene_tree_owner_rule": "When spawning nodes procedurally inside an `@tool` script in the editor, you MUST set `instance.owner = get_tree().edited_scene_root` AFTER `add_child(instance)`, otherwise the spawned nodes will not appear in the Scene dock or save into the `.tscn` file!"
+  },
+  "editor_interface_4_7": {
+    "rule": "In Godot 4.2\u20134.7, `EditorInterface` is a global singleton (`EditorInterface.get_selection()`, `EditorInterface.get_edited_scene_root()`). Do NOT call the removed Godot 3.x `get_editor_interface()` method."
+  }
+}

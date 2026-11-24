@@ -1,0 +1,38 @@
+{
+  "module_metadata": {
+    "engine": "Godot Engine",
+    "version": "4.7",
+    "module": "physics_2d_and_3d",
+    "purpose": "Default Jolt Physics 3D (4.6/4.7), CollisionShape2D.one_way_collision_direction (4.7), chunked TileMapLayer physics, melee AttackArea radius math rule, and PhysicsDirectSpaceState queries."
+  },
+  "godot_4_7_physics_highlights": {
+    "jolt_physics_3d_default": {
+      "status": "Default 3D physics engine for all new projects in Godot 4.6 and 4.7.",
+      "guardrails": [
+        "Keep dynamic RigidBody3D dimensions between 0.1m and 10m for stable solver convergence.",
+        "Use uniform scaling (scale.x == scale.y == scale.z) on Node3D parents of CollisionShape3D.",
+        "Use AnimatableBody3D (with sync_to_physics = true) for moving platforms."
+      ]
+    },
+    "one_way_collision_direction_4_7_new": {
+      "property": "CollisionShape2D.one_way_collision_direction: Vector2",
+      "description": "NEW in Godot 4.7: Allows setting any arbitrary 2D unit vector for one-way pass-through collisions without rotating the CollisionShape2D node.",
+      "example": "collision_shape_2d.one_way_collision = true\ncollision_shape_2d.one_way_collision_direction = Vector2(0.0, -1.0)"
+    },
+    "chunked_tilemaplayer_physics_4_5_plus": {
+      "description": "TileMapLayer automatically merges adjacent tile collision polygons into chunked shapes at runtime, eliminating internal edge snagging and reducing broadphase overhead."
+    }
+  },
+  "melee_attack_area_radius_math_rule": {
+    "problem": "When two solid `CharacterBody2D` or `StaticBody2D` nodes collide, their centers can never get closer than `Attacker_Body_Radius + Target_Body_Radius` (or half-extents). If an attacker's `AttackArea` (`Area2D`) radius is smaller than or equal to the sum of their solid collision radii, `AttackArea` will NEVER overlap the target!",
+    "formula": "AttackArea_Radius >= Attacker_Solid_Radius + Target_Solid_Radius + 6.0 (safety margin in pixels)",
+    "example": "If Zombie solid CircleShape2D radius = 14.0 px and Player solid CircleShape2D radius = 16.0 px, minimum center distance on contact is 30.0 px. Therefore, Zombie's `AttackArea` CircleShape2D radius MUST be >= 36.0 px (e.g., 38.0 px) to reliably detect contact!"
+  },
+  "collision_callback_safety": {
+    "rule": "NEVER mutate `CollisionShape2D.disabled` directly inside `body_entered`, `body_exited`, `area_entered`, or damage callbacks triggered during physics step.",
+    "correct_pattern": "collision_shape.set_deferred(\"disabled\", true)"
+  },
+  "raycast_query_template_2d": {
+    "code": "func _fire_raycast(origin: Vector2, target: Vector2, mask: int) -> Dictionary:\n\tvar space_state: PhysicsDirectSpaceState2D = get_world_2d().direct_space_state\n\tvar query := PhysicsRayQueryParameters2D.create(origin, target, mask, [self])\n\tquery.collide_with_areas = false\n\treturn space_state.intersect_ray(query)"
+  }
+}
